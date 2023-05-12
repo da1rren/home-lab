@@ -12,4 +12,5 @@ jobs:
         uses: tailscale/github-action@v1
         with:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
-      - run: sleep 120
+      - run: sleep 5
+      - run: curl http://100.72.49.130:5172
