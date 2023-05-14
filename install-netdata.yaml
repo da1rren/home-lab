@@ -1,0 +1,9 @@
+- hosts: all
+  gather_facts: false
+  vars_prompt:
+    - name: api_key
+      prompt: Enter the API key
+  tasks:
+    - name: Install Netdata
+      ansible.builtin.shell: |
+        wget -O /tmp/netdata-kickstart.sh https://my-netdata.io/kickstart.sh && sh /tmp/netdata-kickstart.sh --nightly-channel --claim-token {{ api_key }} --claim-url https://app.netdata.cloud
