@@ -41,3 +41,5 @@
       community.docker.docker_container:
         name: watchtower
         image: containrrr/watchtower
+        state: present
+        recreate: true
