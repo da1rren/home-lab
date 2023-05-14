@@ -5,6 +5,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
+COPY ["Home.Plant.Watering.Shared/Home.Plant.Watering.Shared.csproj", "Home.Plant.Watering.Shared/"]
 COPY ["Home.Plant.Watering.Ui/Home.Plant.Watering.Ui.csproj", "Home.Plant.Watering.Ui/"]
 RUN dotnet restore "Home.Plant.Watering.Ui/Home.Plant.Watering.Ui.csproj"
 COPY . .
