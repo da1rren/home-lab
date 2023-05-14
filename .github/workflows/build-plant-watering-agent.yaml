@@ -30,5 +30,6 @@ jobs:
 
       - name: 'Build HomeLab Agent Image'
         run: |
-          docker build -f Home.Plant.Watering.Agent/Dockerfile . --tag ghcr.io/${{github.actor}}/plant-watering-agent:latest
+          docker buildx ls
+          docker buildx -f Home.Plant.Watering.Agent/Dockerfile . --tag ghcr.io/${{github.actor}}/plant-watering-agent:latest
           docker push ghcr.io/${{github.actor}}/plant-watering-agent:latest
