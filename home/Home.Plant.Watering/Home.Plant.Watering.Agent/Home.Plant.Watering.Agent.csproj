@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Grpc.Net.Client" Version="2.53.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
         <PackageReference Include="System.Device.Gpio" Version="2.2.0" />
     </ItemGroup>
@@ -17,5 +18,9 @@
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Home.Plant.Watering.Shared\Home.Plant.Watering.Shared.csproj" />
     </ItemGroup>
 </Project>

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+service PumpService {
+  rpc Start (PumpStartRequest) returns (stream PumpStartResponse) {}
+}
+
+message PumpStartRequest {
+  string hostname = 1;
+}
+
+message PumpStartResponse {
+  int32 seconds = 1;
+}
