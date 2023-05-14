@@ -6,7 +6,7 @@ on:
       - 'main'
 
 jobs:
-  docker:
+  build-plant-watering-agent:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -28,7 +28,7 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
 
-      - name: 'Build Inventory Image'
+      - name: 'Build HomeLab Agent Image'
         run: |
           docker build -f Home.Plant.Watering.Agent/Dockerfile . --tag ghcr.io/${{github.actor}}/plant-watering-agent:latest
           docker push ghcr.io/${{github.actor}}/plant-watering-agent:latest

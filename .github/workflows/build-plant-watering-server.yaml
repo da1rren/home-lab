@@ -6,7 +6,7 @@ on:
       - 'main'
 
 jobs:
-  docker:
+  build-plant-watering-server:
     runs-on: ubuntu-latest
     defaults:
         run:
@@ -28,7 +28,7 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
 
-      - name: 'Build Inventory Image'
+      - name: 'Build HomeLab Server Image'
         run: |
           docker build -f Home.Plant.Watering.Ui/Dockerfile . --tag ghcr.io/${{github.actor}}/plant-watering-server:latest
           docker push ghcr.io/${{github.actor}}/plant-watering-server:latest
