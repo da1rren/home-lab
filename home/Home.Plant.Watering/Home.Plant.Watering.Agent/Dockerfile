@@ -10,7 +10,7 @@ WORKDIR "/src/Home.Plant.Watering.Agent"
 RUN dotnet build "Home.Plant.Watering.Agent.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Home.Plant.Watering.Agent.csproj" --runtime linux-arm64 -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Home.Plant.Watering.Agent.csproj" --runtime linux-arm64 -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
