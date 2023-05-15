@@ -8,10 +8,10 @@ COPY ["Home.Plant.Watering.Agent/Home.Plant.Watering.Agent.csproj", "Home.Plant.
 RUN dotnet restore "Home.Plant.Watering.Agent/Home.Plant.Watering.Agent.csproj"
 COPY . .
 WORKDIR "/src/Home.Plant.Watering.Agent"
-RUN dotnet build "Home.Plant.Watering.Agent.csproj" -c Release -o /app/build
+RUN dotnet build "Home.Plant.Watering.Agent.csproj" -c Release --runtime linux-arm64 -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Home.Plant.Watering.Agent.csproj" --runtime linux-arm64 --self-contained -c Release -o /app/publish
+RUN dotnet publish "Home.Plant.Watering.Agent.csproj" --runtime linux-arm64 -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
