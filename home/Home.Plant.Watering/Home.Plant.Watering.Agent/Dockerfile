@@ -1,7 +1,7 @@
 ﻿FROM mcr.microsoft.com/dotnet/runtime:7.0 AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["Home.Plant.Watering.Shared/Home.Plant.Watering.Shared.csproj", "Home.Plant.Watering.Shared/"]
 COPY ["Home.Plant.Watering.Agent/Home.Plant.Watering.Agent.csproj", "Home.Plant.Watering.Agent/"]
