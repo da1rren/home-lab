@@ -34,6 +34,7 @@ jobs:
           context: home/Home.Plant.Watering/
           file: home/Home.Plant.Watering/Home.Plant.Watering.Agent/Dockerfile
           platforms: linux/amd64,linux/arm64,linux/arm64/v8
+          provenance: false
           push: true
           tags: ghcr.io/${{github.actor}}/plant-watering-agent:latest
 
