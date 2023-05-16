@@ -16,7 +16,17 @@ public class Worker : BackgroundService
     {
         _logger = logger;
         var uri = configuration["ServerUri"] ?? throw new ArgumentException("Server Uri is not provided");
-        _channel = GrpcChannel.ForAddress(uri);
+        
+        // Disable tls check for the moment....
+        var httpClientHandler = new HttpClientHandler();
+        httpClientHandler.ServerCertificateCustomValidationCallback = 
+            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        var httpClient = new HttpClient(httpClientHandler);
+        
+        _channel = GrpcChannel.ForAddress(uri, new GrpcChannelOptions
+        {
+            HttpClient = httpClient
+        });
     }
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -42,9 +52,9 @@ public class Worker : BackgroundService
                     await HandleRequest(reply.ShouldPump, stoppingToken);
                 }
             }
-            catch (RpcException)
+            catch (RpcException ex)
             {
-                _logger.LogInformation("Failed to connect to server.");
+                _logger.LogInformation(ex, "Failed to connect to server.");
             }
 
             await Task.Delay(5000, stoppingToken);
