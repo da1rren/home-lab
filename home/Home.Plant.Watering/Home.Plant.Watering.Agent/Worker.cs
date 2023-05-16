@@ -7,8 +7,8 @@ using System.Device.Gpio;
 public class Worker : BackgroundService
 {
     private const int Pin = 14;
-    private bool IsOn { get; set; }
     
+    private PinValue _pinStatus;
     private readonly ILogger<Worker> _logger;
     private readonly GrpcChannel _channel;
 
@@ -39,7 +39,7 @@ public class Worker : BackgroundService
             {
                 await foreach (var reply in stream.WithCancellation(stoppingToken))
                 {
-                    await HandleRequest(reply.Seconds, stoppingToken);
+                    await HandleRequest(reply.ShouldPump, stoppingToken);
                 }
             }
             catch (RpcException)
@@ -51,13 +51,19 @@ public class Worker : BackgroundService
         }
     }
 
-    private async Task HandleRequest(int seconds, CancellationToken cancellationToken)
+    private async Task HandleRequest(bool shouldPump, CancellationToken cancellationToken)
     {
+        var desiredPinValue = shouldPump ? PinValue.High : PinValue.Low;
+
+        // Nothing to change
+        if (desiredPinValue == _pinStatus)
+        {
+            return;
+        }
+        
         using var controller = new GpioController();
         controller.OpenPin(Pin, PinMode.Output);
-        controller.Write(Pin, ((IsOn) ? PinValue.High : PinValue.Low));
-        await Task.Delay(seconds * 1000, cancellationToken);
-        IsOn = !IsOn;
+        controller.Write(Pin, _pinStatus);
     }
     
     public override void Dispose()

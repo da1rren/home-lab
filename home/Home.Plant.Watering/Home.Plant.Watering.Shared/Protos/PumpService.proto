@@ -9,5 +9,5 @@ message PumpStartRequest {
 }
 
 message PumpStartResponse {
-  int32 seconds = 1;
+  bool shouldPump = 1;
 }
