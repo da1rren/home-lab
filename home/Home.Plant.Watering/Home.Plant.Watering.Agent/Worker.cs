@@ -73,11 +73,16 @@ public class Worker : BackgroundService
         
         using var controller = new GpioController();
         controller.OpenPin(Pin, PinMode.Output);
-        controller.Write(Pin, _pinStatus);
+        controller.Write(Pin, desiredPinValue);
+        _pinStatus = desiredPinValue;
     }
     
     public override void Dispose()
     {
+        using var controller = new GpioController();
+        controller.OpenPin(Pin, PinMode.Output);
+        controller.Write(Pin, PinValue.Low);
+
         _channel.Dispose();
         base.Dispose();
     }
