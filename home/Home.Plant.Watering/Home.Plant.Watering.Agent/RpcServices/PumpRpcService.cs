@@ -46,7 +46,13 @@ public class PumpRpcService : PumpService.PumpServiceBase
             });
         };
 
-        // Todo convert to Rx
-        await Task.Delay(int.MaxValue, context.CancellationToken);
+        try
+        {
+            await Task.Delay(int.MaxValue, context.CancellationToken);
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignore
+        }
     }
 }
