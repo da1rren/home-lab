@@ -1,16 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <UserSecretsId>dotnet-Home.Plant.Watering.Agent-909430E7-9690-4764-AAD8-68EC6A63BDA9</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Grpc.Net.Client" Version="2.53.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
+        <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.53.0" />
         <PackageReference Include="System.Device.Gpio" Version="2.2.0" />
     </ItemGroup>
 
@@ -23,4 +22,5 @@
     <ItemGroup>
       <ProjectReference Include="..\Home.Plant.Watering.Shared\Home.Plant.Watering.Shared.csproj" />
     </ItemGroup>
+
 </Project>

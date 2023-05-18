@@ -1,13 +1,35 @@
 syntax = "proto3";
 
+option csharp_namespace = "Home.Plant.Watering.Shared";
+
 service PumpService {
-  rpc Start (PumpStartRequest) returns (stream PumpStartResponse) {}
+  rpc Start (StartPumpRequest) returns (StartPumpResponse) {}
+  rpc Stop (StopPumpRequest) returns (StopPumpResponse) {}
+  rpc StatusStream (PumpStatusStreamRequest) returns (stream PumpStatusStreamResponse) {}
 }
 
-message PumpStartRequest {
-  string hostname = 1;
+message StartPumpRequest {
+  
 }
 
-message PumpStartResponse {
-  bool shouldPump = 1;
+message StartPumpResponse {
+
+}
+
+
+message StopPumpRequest {
+  
+}
+
+message StopPumpResponse {
+
+}
+
+
+message PumpStatusStreamRequest {
+}
+
+message PumpStatusStreamResponse {
+  string Hostname = 1;
+  bool IsPumping = 2;
 }
