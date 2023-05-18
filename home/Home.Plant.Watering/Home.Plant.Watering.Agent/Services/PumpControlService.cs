@@ -19,8 +19,13 @@ public class PumpControlService : IPumpControlService
 
     public bool IsPumping()
     {
-        var pinValue = _controller.Read(Pin);
-        return pinValue == PinValue.High ? true : false;
+        lock (_lock)
+        {
+            _controller.OpenPin(Pin);
+            var pinValue = _controller.Read(Pin);
+            _controller.ClosePin(Pin);
+            return pinValue == PinValue.High ? true : false;
+        }
     }
 
     public void StartPump()
@@ -29,8 +34,10 @@ public class PumpControlService : IPumpControlService
         {
             _controller.OpenPin(Pin, PinMode.Output);
             _controller.Write(Pin, PinValue.High);
-            StatusChanged?.Invoke(this, new StatusChangedEvent(true));
+            _controller.ClosePin(Pin);
         }
+        
+        StatusChanged?.Invoke(this, new StatusChangedEvent(true));
     }
 
     public void StopPump()
@@ -39,8 +46,10 @@ public class PumpControlService : IPumpControlService
         {
             _controller.OpenPin(Pin, PinMode.Output);
             _controller.Write(Pin, PinValue.Low);
-            StatusChanged?.Invoke(this, new StatusChangedEvent(false));
+            _controller.ClosePin(Pin);
         }
+        
+        StatusChanged?.Invoke(this, new StatusChangedEvent(false));
     }
 
     public void Dispose()
