@@ -1,7 +1,10 @@
+using Grpc.Core;
+using Grpc.Net.Client;
 using Home.Plant.Watering.Shared;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
