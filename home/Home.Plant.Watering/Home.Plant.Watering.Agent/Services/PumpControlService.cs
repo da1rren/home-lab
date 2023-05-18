@@ -24,7 +24,7 @@ public class PumpControlService : IPumpControlService
             _controller.OpenPin(Pin);
             var pinValue = _controller.Read(Pin);
             _controller.ClosePin(Pin);
-            return pinValue == PinValue.High ? true : false;
+            return pinValue != PinValue.High;
         }
     }
 
@@ -33,7 +33,7 @@ public class PumpControlService : IPumpControlService
         lock (_lock)
         {
             _controller.OpenPin(Pin, PinMode.Output);
-            _controller.Write(Pin, PinValue.High);
+            _controller.Write(Pin, PinValue.Low);
             _controller.ClosePin(Pin);
         }
         
@@ -45,7 +45,7 @@ public class PumpControlService : IPumpControlService
         lock (_lock)
         {
             _controller.OpenPin(Pin, PinMode.Output);
-            _controller.Write(Pin, PinValue.Low);
+            _controller.Write(Pin, PinValue.High);
             _controller.ClosePin(Pin);
         }
         
