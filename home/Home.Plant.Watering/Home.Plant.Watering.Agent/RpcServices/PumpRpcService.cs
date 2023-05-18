@@ -31,20 +31,27 @@ public class PumpRpcService : PumpService.PumpServiceBase
     public override async Task StatusStream(PumpStatusStreamRequest request, IServerStreamWriter<PumpStatusStreamResponse> responseStream, ServerCallContext context)
     {
         var hostname = Environment.MachineName;
+
+        async void OnPumpServiceOnStatusChanged(object? _, StatusChangedEvent args)
+        {
+            if (context.CancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+            
+            await responseStream.WriteAsync(new PumpStatusStreamResponse
+            {
+                Hostname = hostname, 
+                IsPumping = args.IsPumping
+            });
+        }
         
         await responseStream.WriteAsync(new PumpStatusStreamResponse
         {
             Hostname = hostname, IsPumping = _pumpService.IsPumping()
         });
-
-        _pumpService.StatusChanged += async (_, args) =>
-        {
-            await responseStream.WriteAsync(new PumpStatusStreamResponse
-            {
-                Hostname = hostname,
-                IsPumping = args.IsPumping
-            });
-        };
+        
+        _pumpService.StatusChanged += OnPumpServiceOnStatusChanged;
 
         try
         {
@@ -54,5 +61,8 @@ public class PumpRpcService : PumpService.PumpServiceBase
         {
             // Ignore
         }
+
+        // Need to unregister and close out 
+        _pumpService.StatusChanged -= OnPumpServiceOnStatusChanged;
     }
 }
