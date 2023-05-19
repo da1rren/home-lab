@@ -29,12 +29,15 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders =
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    
+    // Allow any proxies to forward these headers
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
 });
 
 var app = builder.Build();
 
 app.UseForwardedHeaders();
-app.UseHttpLogging();
 
 if (!app.Environment.IsDevelopment())
 {
