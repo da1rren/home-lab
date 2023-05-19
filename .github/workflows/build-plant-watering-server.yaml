@@ -41,3 +41,18 @@ jobs:
 
           docker push ghcr.io/${{github.actor}}/plant-watering-server:latest
           docker push ghcr.io/${{github.actor}}/plant-watering-server:${{ steps.gitversion.outputs.semVer }}-${{ steps.gitversion.outputs.shortSha }}
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+      - name: Azure CLI script
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.30.0
+          inlineScript: |
+            az webapp config container set --name home-ui \
+            --resource-group home-ui \
+            --docker-custom-image-name ghcr.io/${{github.actor}}/plant-watering-server:${{ steps.gitversion.outputs.semVer }}-${{ steps.gitversion.outputs.shortSha }} \
+            --docker-registry-server-url https://ghcr.io/
