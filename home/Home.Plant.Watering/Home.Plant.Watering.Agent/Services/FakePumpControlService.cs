@@ -1,4 +1,3 @@
-#pragma warning disable CS1998
 namespace Home.Plant.Watering.Agent.Services;
 
 using System.Reactive.Subjects;
@@ -17,26 +16,28 @@ public class FakePumpControlService : IPumpControlService
             new PumpStatus(false, null));
     }
 
-    public async Task<bool> IsPumping(CancellationToken cancellationToken)
+    public Task<bool> IsPumping(CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Is Pumping: {_isPumping}");
-        return _isPumping;
+        return Task.FromResult(_isPumping);
     }
 
     public async Task StartPump(CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Started Pump");
         _isPumping = true;
+        await PumpStatusSubject.OnNextAsync(new PumpStatus(_isPumping, DateTimeOffset.Now));
     }
 
     public async Task StopPump(CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Stopped Pump");
         _isPumping = false;
+        await PumpStatusSubject.OnNextAsync(new PumpStatus(_isPumping, DateTimeOffset.Now));
     }
     
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        // Nothing
+        return ValueTask.CompletedTask;
     }
 }

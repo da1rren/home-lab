@@ -22,6 +22,11 @@ var app = builder.Build();
 
 app.Lifetime.ApplicationStopping.Register((_, cancellationToken) =>
 {
+    if (OperatingSystem.IsMacOS())
+    {
+        return;
+    }
+    
     var pumpControl = new PumpControlService();
     
     pumpControl.StopPump(CancellationToken.None)

@@ -3,6 +3,9 @@ namespace Home.Plant.Watering.Agent.RpcServices;
 using Grpc.Core;
 using Services;
 using Shared;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 public class PumpRpcService : PumpService.PumpServiceBase
 {
@@ -31,16 +34,20 @@ public class PumpRpcService : PumpService.PumpServiceBase
     public override async Task StatusStream(PumpStatusStreamRequest request, IServerStreamWriter<PumpStatusStreamResponse> responseStream, ServerCallContext context)
     {
         var hostname = Environment.MachineName;
-
-        var subscription = await _pumpService.PumpStatusSubject.SubscribeAsync(async pumpStatus =>
+        
+        await _pumpService.PumpStatusSubject.TakeWhile(async (pumpStatus, _) =>
         {
+            if (context.CancellationToken.IsCancellationRequested)
+            {
+                return false;
+            }
+            
             await responseStream.WriteAsync(new PumpStatusStreamResponse
             {
-                Hostname = hostname, 
-                IsPumping = pumpStatus.IsPumping
+                Hostname = hostname, IsPumping = pumpStatus.IsPumping
             });
-        });
 
-        await subscription.DisposeAsync();
+            return true;
+        });
     }
 }
