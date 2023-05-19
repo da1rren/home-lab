@@ -33,16 +33,12 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    app.UseForwardedHeaders();
     app.UseHsts();
-}
-else
-{
-    app.UseDeveloperExceptionPage();
-    app.UseForwardedHeaders();
 }
 
 app.UseStaticFiles();
