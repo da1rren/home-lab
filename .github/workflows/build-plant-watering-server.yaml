@@ -40,3 +40,4 @@ jobs:
           --tag ghcr.io/${{github.actor}}/plant-watering-server:${{ steps.gitversion.outputs.semVer }}-${{ steps.gitversion.outputs.shortSha }} 
 
           docker push ghcr.io/${{github.actor}}/plant-watering-server:latest
+          docker push ghcr.io/${{github.actor}}/plant-watering-server:${{ steps.gitversion.outputs.semVer }}-${{ steps.gitversion.outputs.shortSha }}
