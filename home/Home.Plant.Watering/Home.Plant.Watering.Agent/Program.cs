@@ -20,6 +20,15 @@ else
 
 var app = builder.Build();
 
+app.Lifetime.ApplicationStopping.Register((_, cancellationToken) =>
+{
+    var pumpControl = new PumpControlService();
+    
+    pumpControl.StopPump(CancellationToken.None)
+        .GetAwaiter()
+        .GetResult();
+}, null);
+
 // Configure the HTTP request pipeline.
 app.MapGrpcService<Home.Plant.Watering.Agent.RpcServices.PumpRpcService>();
 
