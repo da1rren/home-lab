@@ -1,12 +1,14 @@
 namespace Home.Plant.Watering.Agent.Services;
 
-public interface IPumpControlService : IDisposable
+using System.Reactive.Subjects;
+
+public interface IPumpControlService : IAsyncDisposable
 {
-    event EventHandler<StatusChangedEvent>? StatusChanged;
+    SequentialBehaviorAsyncSubject<PumpStatus> PumpStatusSubject { get; }
     
-    bool IsPumping();
+    Task<bool> IsPumping(CancellationToken cancellationToken);
     
-    void StartPump();
+    Task StartPump(CancellationToken cancellationToken);
     
-    void StopPump();
+    Task StopPump(CancellationToken cancellationToken);
 }

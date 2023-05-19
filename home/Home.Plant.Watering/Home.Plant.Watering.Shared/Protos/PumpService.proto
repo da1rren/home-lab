@@ -32,4 +32,5 @@ message PumpStatusStreamRequest {
 message PumpStatusStreamResponse {
   string Hostname = 1;
   bool IsPumping = 2;
+  int64 timestamp = 3;
 }

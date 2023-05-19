@@ -15,7 +15,7 @@ public class PumpRpcService : PumpService.PumpServiceBase
     
     public override async Task<StartPumpResponse> Start(StartPumpRequest request, ServerCallContext context)
     {
-        _pumpService.StartPump();
+        await _pumpService.StartPump(context.CancellationToken);
         return new StartPumpResponse
         {
             
@@ -24,7 +24,7 @@ public class PumpRpcService : PumpService.PumpServiceBase
 
     public override async Task<StopPumpResponse> Stop(StopPumpRequest request, ServerCallContext context)
     {
-        _pumpService.StopPump();
+        await _pumpService.StopPump(context.CancellationToken);
         return new StopPumpResponse { };
     }
 
@@ -32,37 +32,15 @@ public class PumpRpcService : PumpService.PumpServiceBase
     {
         var hostname = Environment.MachineName;
 
-        async void OnPumpServiceOnStatusChanged(object? _, StatusChangedEvent args)
+        var subscription = await _pumpService.PumpStatusSubject.SubscribeAsync(async pumpStatus =>
         {
-            if (context.CancellationToken.IsCancellationRequested)
-            {
-                return;
-            }
-            
             await responseStream.WriteAsync(new PumpStatusStreamResponse
             {
                 Hostname = hostname, 
-                IsPumping = args.IsPumping
+                IsPumping = pumpStatus.IsPumping
             });
-        }
-        
-        await responseStream.WriteAsync(new PumpStatusStreamResponse
-        {
-            Hostname = hostname, IsPumping = _pumpService.IsPumping()
         });
-        
-        _pumpService.StatusChanged += OnPumpServiceOnStatusChanged;
 
-        try
-        {
-            await Task.Delay(int.MaxValue, context.CancellationToken);
-        }
-        catch (TaskCanceledException)
-        {
-            // Ignore
-        }
-
-        // Need to unregister and close out 
-        _pumpService.StatusChanged -= OnPumpServiceOnStatusChanged;
+        await subscription.DisposeAsync();
     }
 }

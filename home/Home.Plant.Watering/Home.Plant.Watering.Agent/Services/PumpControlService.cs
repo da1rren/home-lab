@@ -1,59 +1,86 @@
 namespace Home.Plant.Watering.Agent.Services;
 
 using System.Device.Gpio;
+using System.Reactive.Subjects;
 
-public record StatusChangedEvent(bool IsPumping);
+public record PumpStatus(bool IsPumping, DateTimeOffset? LastActivatedAt);
 
 public class PumpControlService : IPumpControlService
 {
-    private static readonly object _lock = new();
     private readonly GpioController _controller;
+    private readonly SemaphoreSlim _semaphore;
     private const int Pin = 14;
 
-    public event EventHandler<StatusChangedEvent>? StatusChanged;
+    public SequentialBehaviorAsyncSubject<PumpStatus> PumpStatusSubject { get; }
     
     public PumpControlService()
     {
         _controller = new GpioController();
+        _semaphore = new SemaphoreSlim(1);
+        PumpStatusSubject = new SequentialBehaviorAsyncSubject<PumpStatus>(
+            new PumpStatus(false, null));
     }
-
-    public bool IsPumping()
+    public async Task<bool> IsPumping(CancellationToken cancellationToken)
     {
-        lock (_lock)
+        await _semaphore.WaitAsync(cancellationToken);
+        
+        try
         {
             _controller.OpenPin(Pin);
             var pinValue = _controller.Read(Pin);
             _controller.ClosePin(Pin);
-            return pinValue != PinValue.High;
+
+            var isPumping = pinValue != PinValue.High;
+
+            await PumpStatusSubject.OnNextAsync(PumpStatusSubject.Value with
+            {
+                IsPumping = isPumping
+            });
+            
+            return isPumping;
         }
+        finally
+        {
+            _semaphore.Release();
+        }
+        
     }
 
-    public void StartPump()
+    public async Task StartPump(CancellationToken cancellationToken)
     {
-        lock (_lock)
+        await _semaphore.WaitAsync(cancellationToken);
+        
+        try
         {
             _controller.OpenPin(Pin, PinMode.Output);
             _controller.Write(Pin, PinValue.Low);
             _controller.ClosePin(Pin);
         }
-        
-        StatusChanged?.Invoke(this, new StatusChangedEvent(true));
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 
-    public void StopPump()
+    public async Task StopPump(CancellationToken cancellationToken)
     {
-        lock (_lock)
+        await _semaphore.WaitAsync(cancellationToken);
+        
+        try
         {
             _controller.OpenPin(Pin, PinMode.Output);
             _controller.Write(Pin, PinValue.High);
             _controller.ClosePin(Pin);
         }
-        
-        StatusChanged?.Invoke(this, new StatusChangedEvent(false));
+        finally
+        {
+            _semaphore.Release();
+        }
     }
-
-    public void Dispose()
+    
+    public async ValueTask DisposeAsync()
     {
+        await PumpStatusSubject.OnCompletedAsync();
         _controller.Dispose();
     }
 }
