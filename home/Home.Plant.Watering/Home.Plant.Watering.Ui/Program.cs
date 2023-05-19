@@ -33,23 +33,8 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 var app = builder.Build();
 
-app.Use((context, next) =>
-{
-    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-
-    if (context.Request.Headers.TryGetValue("X-Forwarded-Proto", out var header))
-    {
-        logger.LogInformation($"Found header X-Forwarded-Proto: {header.ToString()}");
-    }
-    else
-    {
-        logger.LogInformation($"Did not find header X-Forwarded-Proto");
-    }
-    
-    return next(context);
-});
-
 app.UseForwardedHeaders();
+app.UseHttpLogging();
 
 if (!app.Environment.IsDevelopment())
 {
@@ -59,6 +44,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthorization();
+
 app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
