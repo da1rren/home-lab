@@ -60,6 +60,8 @@ public class PumpControlService : IPumpControlService
         {
             _semaphore.Release();
         }
+        
+        await PumpStatusSubject.OnNextAsync(new PumpStatus(IsPumping: true, LastActivatedAt: DateTimeOffset.Now));
     }
 
     public async Task StopPump(CancellationToken cancellationToken)
@@ -76,6 +78,11 @@ public class PumpControlService : IPumpControlService
         {
             _semaphore.Release();
         }
+        
+        await PumpStatusSubject.OnNextAsync(PumpStatusSubject.Value with
+        {
+            IsPumping = false
+        });
     }
     
     public async ValueTask DisposeAsync()
